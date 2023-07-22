@@ -35,3 +35,6 @@ const UserSchema = new Schema ({
         default: false
     }
 })
+
+
+export default UserSchema
