@@ -4,11 +4,11 @@
  const mongoose = require("mongoose");
  const morgan = require("morgan");
  const cors = require("cors");
- const path = require('path')
+//  const path = require('path')
  const bodyparser = require("body-parser");
- const passport = require("passport");
+//  const passport = require("passport");
  const bcrypt = require("bcrypt");
- const userRoutes = require("./Routes/users")
+//  const userRoutes = require("./Routes/users")
 
  const env = require('dotenv').config();
 
@@ -27,10 +27,10 @@
  app.use[morgan("dev")];
  app.use[cors({ origin: 'https://stale-quiz.onrender.com', credentials: true })];
   // app.use[cors({ origin: true, credentials: true })];
- app.use("/api/users", userRoutes);
+//  app.use("/api/users", userRoutes);
  //routes
- const TestRoutes = require("./Routes/test");
- app.use("/", TestRoutes);
+//  const TestRoutes = require("./Routes/test");
+//  app.use("/", TestRoutes);
 
  //port
 
