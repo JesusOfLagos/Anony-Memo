@@ -10,55 +10,11 @@ const jwt = require("jsonwebtoken");
 const checkAuth = require("../MiddleWare/check-auth");
 const env = require("dotenv").config();
 
+
 const { LoginValidator, RegisterValidator } = require("../Validators/validators");
 
 
 const router = express.Router();
-
-
-
-
-// Login route - This will simulate user login and set up the session
-// router.get('/login', (req, res) => {
-//   const user = {
-//     id: 1,
-//     username: 'john_doe',
-//     email: 'john@example.com',
-//   };
-
-  // Set user data in the session
-//   req.session.user = user;
-//   req.session.loggedIn = true;
-
-//   res.send('User logged in successfully.');
-// });
-
-// Protected route - This route requires the user to be authenticated
-// app.get('/dashboard', (req, res) => {
-  // Check if the user is logged in by checking the session data
-//   if (req.session.loggedIn) {
-    // res.send('Welcome to the dashboard, ' + req.session.user.username + '!');
-//   } else {
-    // res.status(401).send('Unauthorized. Please log in.');
-//   }
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -171,13 +127,13 @@ export default function Logout (req, res) {
 
 // Get A User By Id
 
-router.get('users/find/:id', async (req, res) => {
+export default async function GetUser (req, res) {
     await Users.findOne({_id: req.params.id}).then(user => {
         res.json({user, success: true}).catch(er => {
             res.json({success: false, message: er.message})
         })
     })
-})
+}
 
 
 
