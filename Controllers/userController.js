@@ -25,7 +25,7 @@ const router = express.Router();
 // Create A User 
 
 
-export default async function CreateUser (req, res) {
+async function CreateUser (req, res) {
     console.log(req.body)
     const {errors, isValid} = RegisterValidator(req.body);
     if (!isValid) {
@@ -62,7 +62,7 @@ export default async function CreateUser (req, res) {
 
 // Login A User
 
-export default async function LoginUser (req, res) {
+async function LoginUser (req, res) {
     const {errors, isValid} = LoginValidator(req.body);
 
     if (!isValid) {
@@ -105,7 +105,7 @@ export default async function LoginUser (req, res) {
 
 // logout A User
 
-export default function Logout (req, res) {
+function Logout (req, res) {
 
     // Destroy the session to log out the user
     
@@ -129,7 +129,7 @@ export default function Logout (req, res) {
 
 // Get A User By Id
 
-export default async function GetUser (req, res) {
+async function GetUser (req, res) {
     await Users.findOne({_id: req.params.id}).then(user => {
         res.json({user, success: true}).catch(er => {
             res.json({success: false, message: er.message})
@@ -141,7 +141,7 @@ export default async function GetUser (req, res) {
 
 
 
-export default async function EditProfile (req, res) {
+async function EditProfile (req, res) {
 
      
 

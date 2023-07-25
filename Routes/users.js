@@ -1,6 +1,6 @@
 const express = require("express")
 const isLoggedIn = require("../Auth/isLoggedIn")
-import { CreateUser, LoginUser, Logout, GetUser, EditProfile } from "../Controllers/userController"
+const { CreateUser, LoginUser, Logout, GetUser, EditProfile } = require("../Controllers/userController")
 
 
 const router = express.Router()
