@@ -22,9 +22,47 @@ const router = express.Router();
 
 
 
+
+
+// Create A User 
+
+
+export default async function CreateUser (req, res) {
+    console.log(req.body)
+    const {errors, isValid} = RegisterValidator(req.body);
+    if (!isValid) {
+        res.json({success: false, errors});
+    } else {
+        const {firstName, lastName, email, password} = req.body;
+        const registerUser = new Users({
+            firstName, 
+            lastName,
+            email,
+            password,
+            createdAt: new Date()
+        });
+        await bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(password, salt, (hashErr, hash) => {
+                if (err || hashErr) {
+                    res.json({"message": "Error Ocurred While Hashing", success: false});
+                    return;
+                }
+
+                registerUser.password = hash;
+                registerUser.save().then(() => {
+                    res.json({message: "User Created Successfully", "success": true});
+                })
+            })
+        })
+    }
+}
+
+
+
+
 // Login A User
 
-router.post('/users/auth/login', async (req, res) => {
+export default async function LoginUser (req, res) {
     const {errors, isValid} = LoginValidator(req.body);
     if (!isValid) {
         res.json({success: false, errors});
@@ -57,43 +95,9 @@ router.post('/users/auth/login', async (req, res) => {
             }
         })
     }
-})
+}
 
 
-
-
-// Create A User 
-
-
-router.post('/users/auth', async (req, res) => {
-    console.log(req.body)
-    const {errors, isValid} = RegisterValidator(req.body);
-    if (!isValid) {
-        res.json({success: false, errors});
-    } else {
-        const {firstName, lastName, email, password} = req.body;
-        const registerUser = new Users({
-            firstName, 
-            lastName,
-            email,
-            password,
-            createdAt: new Date()
-        });
-        await bcrypt.genSalt(10, (err, salt) => {
-            bcrypt.hash(password, salt, (hashErr, hash) => {
-                if (err || hashErr) {
-                    res.json({"message": "Error Ocurred While Hashing", success: false});
-                    return;
-                }
-
-                registerUser.password = hash;
-                registerUser.save().then(() => {
-                    res.json({message: "User Created Successfully", "success": true});
-                })
-            })
-        })
-    }
-})
 
 
 
@@ -497,13 +501,6 @@ module.exports = router;
 
 
 
-
-function createUser () {
-
-}
-
-
-export default createUser
 
 
 
