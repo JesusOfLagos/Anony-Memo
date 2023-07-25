@@ -7,11 +7,11 @@ const express = require("express");
 const Users = require("../Models/Users");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const checkAuth = require("../MiddleWare/check-auth");
+
 const env = require("dotenv").config();
 
 
-const { LoginValidator, RegisterValidator } = require("../Validators/validators");
+const { LoginValidator, RegisterValidator } = require("../Validators/userValidators");
 
 
 const router = express.Router();
@@ -166,291 +166,6 @@ async function EditProfile (req, res) {
 
 
 
-// Delete A User
-router.delete('users/delete/:id', async (req, res) => {
-    await Users.findOneAndDelete({_id: req.params.id}).then(user => {
-        res.json({message: "User deleted successfully", success: true}).catch(er => {
-            res.json({success: false, message: "Can't Delete User"})
-        })
-    })
-})
-
-
-
-
-
-
-// Create a quiz for the user
-
-
-
-router.post('/me/create-quiz', async (req, res) => {
-    await Users.findOne({email: req.body.email}).then(user => {
-        const { quizName, description, imgUrl, category, questionName, options, correctAnswer, email } = req.body;
-
-
-
-
-
-        const newQuestion = new Questions({
-            questionName,
-            options,
-            correctAnswer,
-            createdAt: new Date()
-        })
-        const newQuiz = new Quizzes({
-            quizName,
-            questions: newQuestion._id,
-            description,
-            category,
-            imgUrl,
-            createdAt: new Date()
-        })
-
-        newQuiz.questions.push(newQuestion)
-        const Quiz = user.quizzes
-        Quiz.push(newQuiz)
-        newQuiz.save()
-        newQuestion.save()
-
-
-        res.json({message: "Quiz added successfully", success: true, user}).catch(error => {
-            res.json({success: false, message: "Can't create quiz"})
-        })
-    })
-})
-
-
-
-// Get all the quizzes for a user
-
-
-router.get('/me/quizzes', async (req, res) => {
-    await Users.findOne({_id: req.params.id}).then(user => {
-        const Quiz = user.quizzes;
-        res.json({Quiz, success: true, message: "Got all the quizzes"}).catch(error => {
-            res.json({message: "Could not fetch the quizzes for the User", success: false})
-        })
-    })
-})
-
-
-
-
-
-// Fetch All Details For Each Quiz
-
-
-router.get('/quizzes/quiz/:id', async (req, res) => {
-    await Quizzes.findOne({_id: req.params.id}).then(quiz => {
-        res.json({quiz, success: true, message: "Got details for the quizzes"}).catch(error => {
-            res.json({message: "Could not fetch the details for the quiz", success: false})
-        })
-    })
-})
-
-
-
-
-// Edit Quiz Details
-
-
-router.put('/quizzes/:quizId', async (req, res) => {
-
-     
-
-    const {newQuizName, newDescription, newCategory, newImgUrl} = req.body
-
-    const newQuestion = new Questions({
-        questionName,
-        options,
-        correctAnswer,
-        createdAt: new Date()
-    }) 
-    const newValues = { $set: { quizName: newQuizName, questions: [newQuestion], category: newCategory, imgUrl : newImgUrl, description : newDescription } };
-    await Quizzes.findOneAndUpdate({_id: req.params.id}, newValues).then(quiz => {
-
-
-        
-
-        
-
-
-
-        const {} = req.body;
-
-        
-        quiz.quizName = quizName
-        res.json({quiz, success: true, message: "Got details for the quizzes"}).catch(error => {
-            res.json({message: "Could not fetch the details for the quiz", success: false})
-        })
-    })
-})
-
-
-
-
-// Add Questions to a quiz 
-
-
-
-router.post('/quiz/:quizId/questions', async (req, res) => {
-    await Quizzes.findOne({_id: req.params.id}).then(quiz => {
-        const { questionName, options, correctAnswer } = req.body;
-
-
-
-
-
-        const newQuestion = new Questions({
-            questionName,
-            options,
-            correctAnswer,
-            createdAt: new Date()
-        })
-    
-
-        quiz.questions.push(newQuestion)
-        
-        
-        quiz.save()
-        newQuestion.save()
-
-
-        res.json({message: "Question added successfully", success: true, quiz}).catch(error => {
-            res.json({success: false, message: "Can't add question"})
-        })
-    })
-})
-
-
-
-
-// Add options to the question
-
-router.post('/quiz/:quizId/questions/:questionId/options', async (req, res) => {
-    await Questions.findOne({_id: req.params.id}).then(question => {
-        // const {  } = req.body;
-
-    const options = [req.body]
-
-        question.options.push(options)
-        
-        
-        question.save()
-        
-
-
-        res.json({message: "Question added successfully", success: true, quiz}).catch(error => {
-            res.json({success: false, message: "Can't add question"})
-        })
-    })
-})
-
-
-
-
-
-// Get Quiz By Id 
-
-
-router.get('/me/quiz/:id', async (req, res) => {
-    await Quizzes.findOne({_id: req.params.id}).then(quiz => {
-        res.json({quiz, success: true, message: "Quiz Found"}).catch(error => {
-            res.json({success: false, message: "can't find quiz"})
-        })
-    })
-})
-
-
-// Delete A Quiz
-
-router.delete('/users/quizzes/delete', async (req, res) => {
-    await Quizzes.findOneAndDelete({_id: req.params.id}).then(quiz => {
-        res.json({message: "User deleted successfully", success: true, quiz}).catch(error => {
-            res.json({success: false, message: "Can't delete user"})
-        })
-    })
-})
-
-
-
-// Delete A User
-
-router.delete('/users/delete', async(req, res) => {
-    await Users.findOneAndDelete({email: req.body.email}).then(user => {
-        res.json({message: "User deleted successfully", success: true, user}).catch(error => {
-            res.json({success: false, message: "Can't delete user"})
-        })
-    })
-})
-
-
-
-
-
-
-
-
-// Fetch All Questions For A Quiz
-
-
-router.get('/me/quizzes/:quizId/questions/:questionId', async (req, res) => {
-    await Quizzes.findOne({_id: req.params.id}).then(quiz => {
-        const Quiz = quiz.questions;
-        res.json({Quiz, success: true, message: "Got all the quizzes"}).catch(error => {
-            res.json({message: "Could not fetch the quizzes for the User", success: false})
-        })
-    })
-})
-
-
-
-
-
-
-
-// Edit A Question
-
-router.put('/quizzes/:quizId/questions/:questionId', async (req, res) => {
-
-
-    const {newQuestionName, newOptions, newCorrectAnswer} = req.body
-    const newValues = { $set: { questionName: newQuestionName, options: [newOptions], correctAnswer: newCorrectAnswer } };
-    await Questions.findOneAndUpdate({_id: req.params.id}, newValues).then(question => {
-
-        
-        res.json({question, success: true, message: "Question Updated Successfully"}).catch(error => {
-            res.json({message: "Could not update question", success: false})
-        })
-    })
-})
-
-
-
-
-
-
-// Remove A Question in a quiz.
-
-
-
-router.delete('/users/quizzes/:quizId/questions/:questionId/remove', async (req, res) => {
-    await Quizzes.findOne({_id: req.params.id}).then(quiz => {
-
-        const Question = quiz.questions
-        
-        Question.find()
-
-
-        res.json({message: "User deleted successfully", success: true, quiz}).catch(error => {
-            res.json({success: false, message: "Can't delete user"})
-        })
-    })
-})
-
-
-
 
 
 
@@ -475,24 +190,24 @@ router.delete('/users/quizzes/:quizId/questions/:questionId/remove', async (req,
 
 // Attempt A Quiz
 
-router.put('quizzes/:quizId/attempt', checkAuth, async (req, res) => {
+// router.put('quizzes/:quizId/attempt', checkAuth, async (req, res) => {
 
-    const numberOfAttempts = user.numberOfAttempts;
-    const newNumberOfAttempts = numberOfAttempts + 1;
-    const newValues = { $set: { numberOfAttempts: newNumberOfAttempts } };
+//     const numberOfAttempts = user.numberOfAttempts;
+//     const newNumberOfAttempts = numberOfAttempts + 1;
+//     const newValues = { $set: { numberOfAttempts: newNumberOfAttempts } };
 
-    await Users.findOneAndUpdate({_id: req.params.id}, newValues).then(user => {
+//     await Users.findOneAndUpdate({_id: req.params.id}, newValues).then(user => {
 
         // const {newQuestionName, newOptions, newCorrectAnswer} = req.body
 
-        user.save()
+        // user.save()
 
         // const Participants = await Users.findOne(({_id: req.params.id}).then()
-        res.json({user, success: true}).catch(er => {
-            res.json({success: false, message: er.message})
-        })
-    })
-})
+//         res.json({user, success: true}).catch(er => {
+//             res.json({success: false, message: er.message})
+//         })
+//     })
+// })
 
 
 
@@ -505,16 +220,16 @@ router.put('quizzes/:quizId/attempt', checkAuth, async (req, res) => {
 
 // Fetch All Quiz Participants
 
-router.get('/quizzes/:quizId/participants', async(req, res) => {
-    await Quizzes.findById({_id: req.params.id}).then(quiz => {
-        const quizParticipants = quiz.participants;
+// router.get('/quizzes/:quizId/participants', async(req, res) => {
+//     await Quizzes.findById({_id: req.params.id}).then(quiz => {
+//         const quizParticipants = quiz.participants;
 
-        res.json({quizParticipants, success: true}).catch(er => {
-            res.json({success: false, message: er.message})
-        })
+//         res.json({quizParticipants, success: true}).catch(er => {
+//             res.json({success: false, message: er.message})
+//         })
 
-    })
-})
+//     })
+// })
 
 
 
@@ -525,13 +240,13 @@ router.get('/quizzes/:quizId/participants', async(req, res) => {
 
 
 
-router.post('/quizzes/:quizId/close', checkAuth, async (req, res) => {
-    await Users.findOne({_id: req.params.id}).then(user => {
-        res.json({user, success: true}).catch(er => {
-            res.json({success: false, message: er.message})
-        })
-    })
-})
+// router.post('/quizzes/:quizId/close', checkAuth, async (req, res) => {
+//     await Users.findOne({_id: req.params.id}).then(user => {
+//         res.json({user, success: true}).catch(er => {
+//             res.json({success: false, message: er.message})
+//         })
+//     })
+// })
 
 
 
