@@ -2,20 +2,62 @@
 
 
 
-
+const session = require('express-session');
 const express = require("express");
 const Users = require("../Models/Users");
-const Quiz = require("../Models/Quizzes")
-const Questions = require("../Models/Questions")
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const checkAuth = require("../MiddleWare/check-auth");
 const env = require("dotenv").config();
 
 const { LoginValidator, RegisterValidator } = require("../Validators/validators");
-const Quizzes = require("../Models/Quizzes");
+
 
 const router = express.Router();
+
+
+
+
+// Login route - This will simulate user login and set up the session
+// router.get('/login', (req, res) => {
+//   const user = {
+//     id: 1,
+//     username: 'john_doe',
+//     email: 'john@example.com',
+//   };
+
+  // Set user data in the session
+//   req.session.user = user;
+//   req.session.loggedIn = true;
+
+//   res.send('User logged in successfully.');
+// });
+
+// Protected route - This route requires the user to be authenticated
+// app.get('/dashboard', (req, res) => {
+  // Check if the user is logged in by checking the session data
+//   if (req.session.loggedIn) {
+    // res.send('Welcome to the dashboard, ' + req.session.user.username + '!');
+//   } else {
+    // res.status(401).send('Unauthorized. Please log in.');
+//   }
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -64,6 +106,7 @@ export default async function CreateUser (req, res) {
 
 export default async function LoginUser (req, res) {
     const {errors, isValid} = LoginValidator(req.body);
+
     if (!isValid) {
         res.json({success: false, errors});
     } else {
@@ -75,6 +118,8 @@ export default async function LoginUser (req, res) {
                     if (!success) {
                         res.json({message: "Invalid Password", success: false})
                     } else {
+                        req.session.user = user;
+                        req.session.loggedIn = true;
                         const payload = {
                             id: user._id,
                             name: user.firstName
@@ -96,6 +141,28 @@ export default async function LoginUser (req, res) {
         })
     }
 }
+
+
+
+
+// logout A User
+
+export default function Logout (req, res) {
+
+    // Destroy the session to log out the user
+    
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Error destroying session:', err);
+      } else {
+        res.send('User logged out successfully.');
+      }
+    });
+  }
+
+
+
+
 
 
 

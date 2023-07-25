@@ -1,5 +1,5 @@
  // import modules
-
+ const session = require('express-session');
  const express = require("express");
  const mongoose = require("mongoose");
  const morgan = require("morgan");
@@ -14,6 +14,24 @@
 
  // app
  const app = express();
+
+
+
+
+
+ // session
+
+
+ app.use(
+    session({
+      secret: 'my-secret', 
+      resave: false,
+      saveUninitialized: true,
+    })
+  );
+
+
+
 
  //db
 
