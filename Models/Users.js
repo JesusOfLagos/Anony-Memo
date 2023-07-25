@@ -20,6 +20,11 @@ const UserSchema = new Schema ({
         unique: true
     },
 
+    userName: {
+        type: String,
+        required: false
+    },
+
     messages: {
         type: [],
         default: [
@@ -33,6 +38,12 @@ const UserSchema = new Schema ({
     password: {
         type: String,
         required: true
+    },
+
+    profilePicture: {
+        type: String,
+        requireed: false,
+        default: ""
     },
 
     isAdmin: {

@@ -35,8 +35,10 @@ export default async function CreateUser (req, res) {
         const registerUser = new Users({
             firstName, 
             lastName,
+            userName: `${firstName} + ${lastName}`,
             email,
             password,
+            profilePicture,
             createdAt: new Date()
         });
         await bcrypt.genSalt(10, (err, salt) => {
@@ -542,7 +544,7 @@ router.post('/quizzes/:quizId/close', checkAuth, async (req, res) => {
 
 
 
-module.exports = router;
+// module.exports = router;
 
  
 
