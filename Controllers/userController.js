@@ -138,6 +138,32 @@ export default async function GetUser (req, res) {
 
 
 
+
+export default async function EditProfile (req, res) {
+
+     
+
+    const {newUserName, newProfilePicture} = req.body
+
+    const newValues = { $set: { userName: newUserName, profilePicture : newProfilePicture } };
+    await Users.findOneAndUpdate({_id: req.params.id}, newValues).then(user => {
+        user.save()
+        res.json({user, success: true, message: "Edited User Profile Successfully"}).catch(error => {
+            res.json({message: "Can't Update User Profile", success: false})
+        })
+    })
+}
+
+
+
+
+
+
+
+
+
+
+
 // Delete A User
 router.delete('users/delete/:id', async (req, res) => {
     await Users.findOneAndDelete({_id: req.params.id}).then(user => {
