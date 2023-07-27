@@ -1,5 +1,5 @@
 const express = require("express")
-const { default: createMessages } = require("../Controllers/messageController")
+const { GetMessages, SearchMessages, ReportMessageAbuse, ModerateMessage, SendMessage } = require("../Controllers/messageController")
 
 
 const router = express.Router()

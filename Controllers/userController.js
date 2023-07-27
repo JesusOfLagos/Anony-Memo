@@ -259,7 +259,13 @@ async function EditProfile (req, res) {
 
 
 
-// module.exports = router;
+module.exports = {
+    CreateUser: CreateUser,
+    LoginUser: LoginUser,
+    GetUser: GetUser,
+    EditProfile: EditProfile,
+    Logout: Logout
+  };
 
  
 

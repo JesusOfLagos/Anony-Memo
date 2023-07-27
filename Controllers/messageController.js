@@ -137,4 +137,17 @@ async function GetMessages (req, res) {
       res.status(500).json({ error: 'Failed to find messages with this keyword.' });
     }
   }
+
+
+
+
+
+
+  module.exports = {
+    SearchMessages: SearchMessages,
+    SendMessage: SendMessage,
+    ReportMessageAbuse: ReportMessageAbuse,
+    ModerateMessage: ModerateMessage,
+    GetMessages: GetMessages
+  };
   
