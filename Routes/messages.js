@@ -1,11 +1,9 @@
 const express = require("express")
-const { GetMessages, SearchMessages, ReportMessageAbuse, ModerateMessage, SendMessage } = require("../Controllers/messageController")
-
-
 const router = express.Router()
+const checkAuth = require("../Auth/checkAuth")
+const { GetMessages, SearchMessages, ReportMessageAbuse, ModerateMessage, SendMessage, ReportAbuse, SendAMessage } = require("../Controllers/messageController")
 
 
-router.post('/users/create', createMessages)
 
 
 

@@ -140,6 +140,35 @@ async function GetMessages (req, res) {
 
 
 
+  async function SendAMessage (req, res) {
+    try {
+      const { toUserId } = req.body;
+      io.to(req.userData.userId).emit('newMessage', message);
+      io.to(toUserId).emit('newMessage', message);
+  
+      res.status(201).json({ message: 'Message sent successfully.' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to send the message.' });
+    }
+  }
+  
+  
+  
+  
+  
+  async function ReportAbuse (req, res) {
+    try {
+      const moderatorId = 'moderator123'; 
+      io.to(moderatorId).emit('abuseReport', abuseReport);
+  
+      res.status(201).json({ message: 'Abuse reported successfully.' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to report abuse.' });
+    }
+  }
+
+
+
 
 
 
@@ -148,6 +177,8 @@ async function GetMessages (req, res) {
     SendMessage: SendMessage,
     ReportMessageAbuse: ReportMessageAbuse,
     ModerateMessage: ModerateMessage,
-    GetMessages: GetMessages
+    GetMessages: GetMessages,
+    ReportAbuse: ReportAbuse,
+    SendAMessage: SendAMessage
   };
   
