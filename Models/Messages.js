@@ -25,7 +25,16 @@ const MessageSchema = new Schema ({
     to: {
         type: UserSchema,
         default: "12222222"
+    },
+
+    isHidden: {
+        type: Boolean,
+        default: false
+    },
+
+    isDeleted: {
+        type: Boolean,
+        default: false
     }
 })
 
-export default MessageSchema

@@ -49,6 +49,11 @@ const UserSchema = new Schema ({
     isAdmin: {
         type: Boolean,
         default: false
+    },
+
+    warnings: {
+        type: Number,
+        default: 0
     }
 })
 
