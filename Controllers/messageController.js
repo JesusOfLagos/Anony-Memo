@@ -1,5 +1,4 @@
 
-const socketio = require('socket.io');
 
 const app = express();
 
@@ -8,13 +7,40 @@ const PORT = 3000;
 
 app.use(express.json());
 
+import MessageSchema from '../Models/Messages'
+
+
 
 
 async function SendMessage (req, res) {
   try {
+
+
+    const message = new MessageSchema({
+
+    })
+
+
+
     const { toUserId } = req.body;
-    io.to(req.userData.userId).emit('newMessage', message);
+    io.to(req.userData._id).emit('newMessage', message);
     io.to(toUserId).emit('newMessage', message);
+    const reason = `You just got a message from ${req.userData.userName}`
+
+    
+    const notification = new notificationSchema({
+      to: toUserId,
+      from: req.userData._id,
+      content: reason
+    })
+    // io.to(req.userData.userId).emit('newNotification', notification)
+    io.to(toUserId).emit('newNotification', notification);
+
+    res.status(201).json({ message: 'Notification sent successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to send notification.' });
+  }
+}
 
     res.status(201).json({ message: 'Message sent successfully.' });
   } catch (error) {
@@ -84,6 +110,8 @@ async function ReportMessageAbuse (req, res) {
         default:
           return res.status(400).json({ error: 'Invalid action.' })
       }
+
+      
   
       res.status(200).json({ message: 'Moderation action successful.' })
     } catch (error) {
