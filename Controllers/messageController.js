@@ -7,8 +7,7 @@ const PORT = 3000;
 
 app.use(express.json());
 
-import MessageSchema from '../Models/Messages'
-
+import Mess
 
 
 
@@ -42,11 +41,11 @@ async function SendMessage (req, res) {
   }
 }
 
-    res.status(201).json({ message: 'Message sent successfully.' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to send the message.' });
-  }
-}
+  //   res.status(201).json({ message: 'Message sent successfully.' });
+  // } catch (error) {
+  //   res.status(500).json({ error: 'Failed to send the message.' });
+  // }
+// }
 
 
 

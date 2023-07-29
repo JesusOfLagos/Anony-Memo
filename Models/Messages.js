@@ -1,5 +1,3 @@
-import UserSchema from "./Users"
-
 
 const mongoose = require("mongoose")
 
@@ -18,13 +16,13 @@ const MessageSchema = new Schema ({
     },
 
     sentBy: {
-        type: UserSchema,
-        default: false
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
 
     to: {
-        type: UserSchema,
-        default: "12222222"
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
 
     isHidden: {
@@ -38,3 +36,8 @@ const MessageSchema = new Schema ({
     }
 })
 
+
+
+module.exports = {
+    MessageSchema: MessageSchema
+}
