@@ -41,21 +41,21 @@ You can try out the live demo of Anony-Memo at [https://your-demo-url.com](https
 
 To run Anony-Memo locally, follow these steps:
 
-1. Clone the repository:
+## 1. Clone the repository:
 
 ```bash
 git clone https://github.com/JesusOfLagos/Anony-Memo.git
 cd Anony-Memo
 
 
-2. Install the necessary dependencies:
+## 2. Install the necessary dependencies:
 
 ```bash
 git clone https://github.com/JesusOfLagos/Anony-Memo.git
 cd Anony-Memo
 
 
-3. Add your .env file:
+## 3. Add your .env file:
 
 ```bash
 
@@ -67,13 +67,13 @@ JWT_SECRET=your_jwt_secret_key
 
 
 
-4. Start The Server:
+## 4. Start The Server:
 
 ```bash
 git clone https://github.com/JesusOfLagos/Anony-Memo.git
 cd Anony-Memo
 
-5. Test On Postman:
+## 5. Test On Postman:
 
 ```bash
 git clone https://github.com/JesusOfLagos/Anony-Memo.git
