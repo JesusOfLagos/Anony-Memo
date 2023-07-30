@@ -55,14 +55,25 @@ git clone https://github.com/JesusOfLagos/Anony-Memo.git
 cd Anony-Memo
 
 
+3. Add your .env file:
 
-3. Start The Server:
+```bash
+
+MONGODB_URI=your_mongodb_connection_string
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+JWT_SECRET=your_jwt_secret_key
+
+
+
+4. Start The Server:
 
 ```bash
 git clone https://github.com/JesusOfLagos/Anony-Memo.git
 cd Anony-Memo
 
-4. Test On Postman:
+5. Test On Postman:
 
 ```bash
 git clone https://github.com/JesusOfLagos/Anony-Memo.git
