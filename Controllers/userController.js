@@ -5,7 +5,7 @@
 
 const session = require('express-session');
 const express = require("express");
-const Users = require("../Models/Users");
+import { Users } from '../Models/Users';
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -79,21 +79,26 @@ async function LoginUser (req, res) {
                     } else {
                         req.session.user = user;
                         req.session.loggedIn = true;
-                        const payload = {
-                            id: user._id,
-                            name: user.firstName
-                        }
-                        jwt.sign(
-                            payload,
-                            process.env.APP_SECRET, {expiresIn: 2155926},
-                            (err, token) => {
-                                res.json({
-                                    user,
-                                    token: `Bearer Token: ` + token,
-                                    success: true
-                                })
-                            }
-                        )
+                        res.json({
+                            user,
+                            session,
+                            success: true
+                        })
+                        // const payload = {
+                        //     id: user._id,
+                        //     name: user.firstName
+                        // }
+                        // jwt.sign(
+                        //     payload,
+                        //     process.env.APP_SECRET, {expiresIn: 2155926},
+                        //     (err, token) => {
+                        //         res.json({
+                        //             user,
+                        //             token: `Bearer Token: ` + token,
+                        //             success: true
+                        //         })
+                        //     }
+                        // )
                     }
                 })
             }
@@ -106,11 +111,11 @@ async function LoginUser (req, res) {
 
 // logout A User
 
-function Logout (req, res) {
+async function Logout (req, res) {
 
     // Destroy the session to log out the user
     
-    req.session.destroy((err) => {
+    await req.session.destroy((err) => {
       if (err) {
         console.error('Error destroying session:', err);
       } else {

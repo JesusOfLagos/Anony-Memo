@@ -58,3 +58,7 @@ const UserSchema = new Schema ({
 })
 
 
+module.exports = {
+    Users: UserSchema
+}
+
