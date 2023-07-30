@@ -58,6 +58,7 @@ async function SendMessage (req, res) {
   
 
       const messageId = req.params.messageId;
+      const Id = reportedMessage.from
       const reportedMessage = await Message.findById(messageId);
       if (!reportedMessage) {
         return res.status(404).json({ error: 'Reported message not found.' });
@@ -90,7 +91,8 @@ async function SendMessage (req, res) {
           return res.status(400).json({ error: 'Invalid action.' })
       }
 
-      
+      const notificationContent = `Message acted upon: ${action}`;
+      await sendNotification(req, res, Id, notificationContent);
   
       res.status(200).json({ message: 'Moderation action successful.' })
     } catch (error) {
@@ -99,24 +101,63 @@ async function SendMessage (req, res) {
   }
 
 
-async function GetMessages (req, res) {
-    try {
-      const { sort, userId } = req.query;
+// async function GetMessages (req, res) {
+//     try {
+//       const { sort, userId } = req.query;
 
+//       const queryOptions = {};
+  
+//       if (userId) {
+//         queryOptions.$or = [{ fromUser: userId }, { toUser: userId }];
+//       }
+  
+//       // Sorting based on date
+//       let sortOptions = { createdAt: 1 }; 
+//       if (sort === 'desc') {
+//         sortOptions = { createdAt: -1 }; 
+//       }
+
+
+
+  
+//       // Fetch messages from the database based on query options and sort options
+//       const messages = await Message.find(queryOptions).sort(sortOptions);
+  
+//       res.json(messages);
+//     } catch (error) {
+//       res.status(500).json({ error: 'Failed to fetch messages.' });
+//     }
+//   }
+
+
+
+  async function GetMessages(req, res) {
+    try {
+      const { sort, userId, fromUser, toUser, keyword } = req.query;
+  
       const queryOptions = {};
   
       if (userId) {
         queryOptions.$or = [{ fromUser: userId }, { toUser: userId }];
       }
   
-      // Sorting based on date
-      let sortOptions = { createdAt: 1 }; 
-      if (sort === 'desc') {
-        sortOptions = { createdAt: -1 }; 
+      if (fromUser) {
+        queryOptions.fromUser = fromUser;
       }
-
-
-
+  
+      if (toUser) {
+        queryOptions.toUser = toUser;
+      }
+  
+      if (keyword) {
+        queryOptions.content = { $regex: keyword, $options: 'i' };
+      }
+  
+      // Sorting based on date
+      let sortOptions = { createdAt: 1 };
+      if (sort === 'desc') {
+        sortOptions = { createdAt: -1 };
+      }
   
       // Fetch messages from the database based on query options and sort options
       const messages = await Message.find(queryOptions).sort(sortOptions);
@@ -126,6 +167,7 @@ async function GetMessages (req, res) {
       res.status(500).json({ error: 'Failed to fetch messages.' });
     }
   }
+  
 
 
 
@@ -152,6 +194,9 @@ async function GetMessages (req, res) {
       const { toUserId } = req.body;
       io.to(req.userData.userId).emit('newMessage', message);
       io.to(toUserId).emit('newMessage', message);
+
+      const notificationContent = `New message received from: ${req.userData.userName}`;
+      await sendNotification(req, res, toUserId, notificationContent);
   
       res.status(201).json({ message: 'Message sent successfully.' });
     } catch (error) {
@@ -161,18 +206,6 @@ async function GetMessages (req, res) {
   
   
   
-  
-  
-  async function ReportAbuse (req, res) {
-    try {
-      const moderatorId = 'moderator123'; 
-      io.to(moderatorId).emit('abuseReport', abuseReport);
-  
-      res.status(201).json({ message: 'Abuse reported successfully.' });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to report abuse.' });
-    }
-  }
 
 
 
@@ -185,7 +218,6 @@ async function GetMessages (req, res) {
     ReportMessageAbuse: ReportMessageAbuse,
     ModerateMessage: ModerateMessage,
     GetMessages: GetMessages,
-    ReportAbuse: ReportAbuse,
     SendAMessage: SendAMessage
   };
   
@@ -212,4 +244,7 @@ async function GetMessages (req, res) {
   
 
 
+
+  const notificationContent = `New abuse report received for message ID: ${abuseReport.messageId}`;
+      await sendNotification(req, res, moderatorId, notificationContent);
 
