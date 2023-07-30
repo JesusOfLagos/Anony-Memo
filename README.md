@@ -47,3 +47,25 @@ To run Anony-Memo locally, follow these steps:
 git clone https://github.com/JesusOfLagos/Anony-Memo.git
 cd Anony-Memo
 
+
+2. Install the necessary dependencies:
+
+```bash
+git clone https://github.com/JesusOfLagos/Anony-Memo.git
+cd Anony-Memo
+
+
+
+3. Start The Server:
+
+```bash
+git clone https://github.com/JesusOfLagos/Anony-Memo.git
+cd Anony-Memo
+
+4. Test On Postman:
+
+```bash
+git clone https://github.com/JesusOfLagos/Anony-Memo.git
+cd Anony-Memo
+
+
