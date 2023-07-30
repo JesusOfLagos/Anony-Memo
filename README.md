@@ -47,6 +47,8 @@ To run Anony-Memo locally, follow these steps:
 git clone https://github.com/JesusOfLagos/Anony-Memo.git
 cd Anony-Memo
 
+---
+
 
 ## 2. Install the necessary dependencies:
 
@@ -54,6 +56,8 @@ cd Anony-Memo
 git clone https://github.com/JesusOfLagos/Anony-Memo.git
 cd Anony-Memo
 
+
+---
 
 ## 3. Add your .env file:
 
@@ -65,13 +69,16 @@ CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 JWT_SECRET=your_jwt_secret_key
 
-
+---
 
 ## 4. Start The Server:
 
 ```bash
 git clone https://github.com/JesusOfLagos/Anony-Memo.git
 cd Anony-Memo
+
+---
+
 
 ## 5. Test On Postman:
 
