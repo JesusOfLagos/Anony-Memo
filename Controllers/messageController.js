@@ -1,12 +1,11 @@
 
-
+const express = require('express');
+const socketio = require('socket.io');
+const http = require('http');
 const app = express();
-
-const io = socketio(app);
-const PORT = 3000;
-
-app.use(express.json());
-
+const server = http.createServer(app);
+const io = socketio(server);
+import { sendNotification } from './notificationController'
 
 
 
@@ -45,24 +44,6 @@ async function SendMessage (req, res) {
   //   res.status(500).json({ error: 'Failed to send the message.' });
   // }
 // }
-
-
-
-
-
-
-
-async function ReportMessageAbuse (req, res) {
-  try {
- 
-    const moderatorId = req.params._id;
-    io.to(moderatorId).emit('abuseReport', abuseReport);
-
-    res.status(201).json({ message: 'Abuse reported successfully.' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to report abuse.' });
-  }
-}
 
 
 
@@ -208,3 +189,27 @@ async function GetMessages (req, res) {
     SendAMessage: SendAMessage
   };
   
+
+  
+
+  async function ReportMessageAbuse(req, res) {
+    try {
+      const moderatorId = req.params._id;
+      const abuseReport = req.body.abuseReport; // Assuming you have the abuse report data in the request body
+  
+      // Emit the 'abuseReport' event to the specific moderator
+      io.to(moderatorId).emit('abuseReport', abuseReport);
+  
+      // Send a notification to the moderator about the abuse report
+      const notificationContent = `New abuse report received for message ID: ${abuseReport.messageId}`;
+      await sendNotification(req, res, moderatorId, notificationContent);
+  
+      res.status(201).json({ message: 'Abuse reported successfully.' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to report abuse.' });
+    }
+  }
+  
+
+
+
