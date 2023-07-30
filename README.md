@@ -53,8 +53,7 @@ cd Anony-Memo
 ## 2. Install the necessary dependencies:
 
 ```bash
-git clone https://github.com/JesusOfLagos/Anony-Memo.git
-cd Anony-Memo
+npm install
 
 ```
 
@@ -73,8 +72,7 @@ JWT_SECRET=your_jwt_secret_key
 ## 4. Start The Server:
 
 ```bash
-git clone https://github.com/JesusOfLagos/Anony-Memo.git
-cd Anony-Memo
+npm start
 
 ```
 
@@ -82,7 +80,6 @@ cd Anony-Memo
 ## 5. Test On Postman:
 
 ```bash
-git clone https://github.com/JesusOfLagos/Anony-Memo.git
-cd Anony-Memo
+https://www.postman.com/crimson-meteor-951955/workspace/anony-memo
 
 ```
