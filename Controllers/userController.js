@@ -5,17 +5,39 @@
 
 const session = require('express-session');
 const express = require("express");
-import { Users } from '../Models/Users';
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-
+const router = express.Router();
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+import { Users } from '../Models/Users';
+const { LoginValidator, RegisterValidator } = require("../Validators/userValidators");
+// const jwt = require("jsonwebtoken");
 const env = require("dotenv").config();
 
 
-const { LoginValidator, RegisterValidator } = require("../Validators/userValidators");
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+  api_key: process.env.CLOUDINARY_API_KEY ,   
+  api_secret: process.env.CLOUDINARY_API_SECRET   
+});
+
+// Set up multer storage with Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'Profile-Pictures', 
+    allowed_formats: ['jpg', 'jpeg', 'png'], 
+    transformation: [{ width: 150, height: 150, crop: 'thumb', gravity: 'face' }] 
+  }
+});
 
 
-const router = express.Router();
+const upload = multer({ storage: storage });
+
+
+
 
 
 
@@ -39,9 +61,14 @@ async function CreateUser (req, res) {
             userName: `${firstName} + ${lastName}`,
             email,
             password,
-            profilePicture,
+            profilePicture: result.secure_url,
             createdAt: new Date()
         });
+        if (!req.file) {
+            return res.status(400).json({ message: 'Please provide a valid image file' });
+          }
+          const imageUrl = req.file.path;
+          const result = await cloudinary.uploader.upload(imageUrl, { folder: 'Profile-Pictures' });
         await bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(password, salt, (hashErr, hash) => {
                 if (err || hashErr) {
@@ -127,12 +154,6 @@ async function Logout (req, res) {
 
 
 
-
-
-
-
-
-
 // Get A User By Id
 
 async function GetUser (req, res) {
@@ -146,15 +167,11 @@ async function GetUser (req, res) {
 
 
 
+async function EditUserName (req, res) {
+    const {newUserName} = req.body
 
-async function EditProfile (req, res) {
-
-     
-
-    const {newUserName, newProfilePicture} = req.body
-
-    const newValues = { $set: { userName: newUserName, profilePicture : newProfilePicture } };
-    await Users.findOneAndUpdate({_id: req.params.id}, newValues).then(user => {
+    const newValues = { $set: { userName: newUserName } };
+    await Users.findOneAndUpdate({id: req.params._id}, newValues).then(user => {
         user.save()
         res.json({user, success: true, message: "Edited User Profile Successfully"}).catch(error => {
             res.json({message: "Can't Update User Profile", success: false})
@@ -163,100 +180,27 @@ async function EditProfile (req, res) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-// MongoClient.connect(url, function(err, db) {
-//     if (err) throw err;
-//     var dbo = db.db("mydb");
-//     var myquery = { address: "Valley 345" };
-//     var newvalues = { $set: { name: "Michael", address: "Canyon 123" } };
-//     dbo.collection("customers").updateOne(myquery, newvalues, function(err, res) {
-//       if (err) throw err;
-//       console.log("1 document updated");
-//       db.close();
-//     });
-//   });
+async function EditProfilePicture (req, res) {
+    if (!req.file) {
+      return res.status(400).json({ message: 'Please provide a valid image file' });
+    }
   
+    const imageUrl = req.file.path;
+    const result = await cloudinary.uploader.upload(imageUrl, { folder: 'Profile-Pictures' });
   
-
-
-
-
-
-
-// Attempt A Quiz
-
-// router.put('quizzes/:quizId/attempt', checkAuth, async (req, res) => {
-
-//     const numberOfAttempts = user.numberOfAttempts;
-//     const newNumberOfAttempts = numberOfAttempts + 1;
-//     const newValues = { $set: { numberOfAttempts: newNumberOfAttempts } };
-
-//     await Users.findOneAndUpdate({_id: req.params.id}, newValues).then(user => {
-
-        // const {newQuestionName, newOptions, newCorrectAnswer} = req.body
-
-        // user.save()
-
-        // const Participants = await Users.findOne(({_id: req.params.id}).then()
-//         res.json({user, success: true}).catch(er => {
-//             res.json({success: false, message: er.message})
-//         })
-//     })
-// })
-
-
-
-
-
-
-
-
-
-
-// Fetch All Quiz Participants
-
-// router.get('/quizzes/:quizId/participants', async(req, res) => {
-//     await Quizzes.findById({_id: req.params.id}).then(quiz => {
-//         const quizParticipants = quiz.participants;
-
-//         res.json({quizParticipants, success: true}).catch(er => {
-//             res.json({success: false, message: er.message})
-//         })
-
-//     })
-// })
-
-
-
-
-
-
-// Close a quiz and stop allowing access.
-
-
-
-// router.post('/quizzes/:quizId/close', checkAuth, async (req, res) => {
-//     await Users.findOne({_id: req.params.id}).then(user => {
-//         res.json({user, success: true}).catch(er => {
-//             res.json({success: false, message: er.message})
-//         })
-//     })
-// })
-
-
-
-
+    try {
+      // Save the secure URL in the userSchema
+      const user = await Users.findByIdAndUpdate(req.params.userId, { profilePicture: result.secure_url }, { new: true });
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      return res.json({ imageUrl: result.secure_url });
+    } catch (error) {
+      return res.status(500).json({ message: 'Error updating profile picture' });
+    }
+  }
+  
 
 
 
@@ -269,8 +213,9 @@ module.exports = {
     CreateUser: CreateUser,
     LoginUser: LoginUser,
     GetUser: GetUser,
-    EditProfile: EditProfile,
-    Logout: Logout
+    Logout: Logout,
+    EditUserName: EditUserName,
+    EditProfilePicture: EditProfilePicture
   };
 
  
