@@ -43,3 +43,10 @@ const Schema = Mongoose.Schema
 
 
 
+
+module.exports = {
+    ModerationAction: moderationSchema
+}
+
+
+
