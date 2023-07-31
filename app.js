@@ -40,11 +40,6 @@
  const bcrypt = require("bcrypt");
 //  const userRoutes = require("./Routes/users")
 
- const env = require('dotenv').config();
-
- // app
- const app = express();
-
 
  //db
 
@@ -85,5 +80,5 @@
 
 });
 
-});
+
 

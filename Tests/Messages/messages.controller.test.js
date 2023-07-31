@@ -1,5 +1,5 @@
 
-
+const env = require("dotenv").config()
 const request = require('supertest');
 const { server } = require('./app');
 const mongoose = require('mongoose');
@@ -8,8 +8,7 @@ const { MessageSchema } = require('./Models/Message'); // Assuming this import e
 describe('Message Controller', () => {
   // Connect to the test database before running tests
   beforeAll(async () => {
-    const mongoURI = 'mongodb://localhost:27017/testdb'; // Use your test database URI
-    await mongoose.connect(mongoURI, {
+    await mongoose.connect(env.parsed.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });

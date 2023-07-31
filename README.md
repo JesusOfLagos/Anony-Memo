@@ -83,3 +83,5 @@ npm start
 https://www.postman.com/crimson-meteor-951955/workspace/anony-memo
 
 ```
+
+-- Still working on the tests, you can ignore the test folder for now.
