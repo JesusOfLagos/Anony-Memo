@@ -7,7 +7,7 @@ const server = http.createServer(app);
 const io = socketio(server);
 import { sendNotification } from './notificationController'
 import { Messages } from '../Models/Messages.js'
-// import { Users } from '../Models/Users.js'
+import { Users } from '../Models/Users.js'
 import { ModerationAction } from '../Models/Moderation.js'
 import { ReportAbuse } from '../Models/ReportAbuse.js'
 import { Notifications } from '../Models/Notifications.js'
@@ -164,8 +164,12 @@ async function GetNotifications (req, res) {
       })
 
      await message.save()
+     const user = await Users.find({ id: req.userData._id }).then(user => {
+      user.messages.push(message._id)
+      user.save()
+     })
       io.to(req.userData._id).emit('newMessage', message);
-      io.to(toUserId).emit('newMessage', message);
+      io.to(toUserId).emit('newMessage', message.note);
 
       const notificationContent = `New message received from: ${req.userData.userName}`;
       await sendNotification(toUserId, notificationContent);
