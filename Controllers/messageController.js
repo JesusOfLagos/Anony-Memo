@@ -9,7 +9,8 @@ import { sendNotification } from './notificationController'
 import { Messages } from '../Models/Messages.js'
 // import { Users } from '../Models/Users.js'
 import { ModerationAction } from '../Models/Moderation.js'
-import { ReportAbuse } from '../Models/Messages.js'
+import { ReportAbuse } from '../Models/ReportAbuse.js'
+import { Notifications } from '../Models/Notifications.js'
 
 
  async function ModerateMessage (req, res) {
@@ -62,33 +63,33 @@ import { ReportAbuse } from '../Models/Messages.js'
   }
 
 
-// async function GetMessages (req, res) {
-//     try {
-//       const { sort, userId } = req.query;
+async function GetNotifications (req, res) {
+    try {
+      const { sort, userId } = req.query;
 
-//       const queryOptions = {};
+      const queryOptions = {};
   
-//       if (userId) {
-//         queryOptions.$or = [{ fromUser: userId }, { toUser: userId }];
-//       }
+      // if (userId) {
+      //   queryOptions.$or = [{ fromUser: userId }, { toUser: userId }];
+      // }
   
-//       // Sorting based on date
-//       let sortOptions = { createdAt: 1 }; 
-//       if (sort === 'desc') {
-//         sortOptions = { createdAt: -1 }; 
-//       }
+      // Sorting based on date
+      let sortOptions = { createdAt: 1 }; 
+      if (sort === 'desc') {
+        sortOptions = { createdAt: -1 }; 
+      }
 
 
 
   
-//       // Fetch messages from the database based on query options and sort options
-//       const messages = await Message.find(queryOptions).sort(sortOptions);
+      // Fetch messages from the database based on query options and sort options
+      const notifications = await Notifications.find().sort(sortOptions);
   
-//       res.json(messages);
-//     } catch (error) {
-//       res.status(500).json({ error: 'Failed to fetch messages.' });
-//     }
-//   }
+      res.json(notifications);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch messages.' });
+    }
+  }
 
 
 
@@ -122,7 +123,7 @@ import { ReportAbuse } from '../Models/Messages.js'
       }
   
       // Fetch messages from the database based on query options and sort options
-      const messages = await Message.find(queryOptions).sort(sortOptions);
+      const messages = await Messages.find(queryOptions).sort(sortOptions);
   
       res.json(messages);
     } catch (error) {
@@ -141,7 +142,7 @@ import { ReportAbuse } from '../Models/Messages.js'
     try {
       const { keyword } = req.query;
   
-      const messages = await Message.find({ content: { $regex: keyword, $options: 'i' } });
+      const messages = await Messages.find({ content: { $regex: keyword, $options: 'i' } });
   
       res.json(messages);
     } catch (error) {
@@ -151,11 +152,11 @@ import { ReportAbuse } from '../Models/Messages.js'
 
 
 
-  async function SendAMessage (req, res) {
+  async function SendMessage (req, res) {
     try {
       const { title, note, toUserId } = req.body;
 
-      const message = new MessageSchema({
+      const message = new Messages({
           title,
           note,
           to: toUserId,
@@ -218,7 +219,7 @@ import { ReportAbuse } from '../Models/Messages.js'
     ReportMessageAbuse: ReportMessageAbuse,
     ModerateMessage: ModerateMessage,
     GetMessages: GetMessages,
-    SendAMessage: SendAMessage
+    GetNotifications: GetNotifications
   };
   
 
