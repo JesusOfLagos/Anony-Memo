@@ -39,5 +39,5 @@ const MessageSchema = new Schema ({
 
 
 module.exports = {
-    MessageSchema: MessageSchema
+    Messages: MessageSchema
 }
