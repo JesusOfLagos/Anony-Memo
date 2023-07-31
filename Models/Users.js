@@ -27,12 +27,12 @@ const UserSchema = new Schema ({
 
     messages: {
         type: [],
-        default: [
-            {
-                name: "Message 2",
-                input: "No message at the moment!"
-            }
-        ]
+        default: []
+    },
+
+    notifications: {
+        type: [],
+        default: []
     },
 
     password: {
