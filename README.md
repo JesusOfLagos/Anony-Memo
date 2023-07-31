@@ -14,16 +14,16 @@ Anony-Memo is a web application that allows users to create anonymous messages (
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
 - [License](#license)
-
+<!-- 
 ## Demo
 
-You can try out the live demo of Anony-Memo at [https://your-demo-url.com](https://your-demo-url.com).
+You can try out the live demo of Anony-Memo at [https://your-demo-url.com](https://your-demo-url.com). -->
 
 ## Features
 
 - Create and post anonymous messages (memos).
 - View and read anonymous messages without user identification.
-- Responsive and user-friendly interface.
+<!-- - Responsive and user-friendly interface. -->
 - Real-time updates for new messages.
 
 ## Technologies Used
@@ -34,7 +34,7 @@ You can try out the live demo of Anony-Memo at [https://your-demo-url.com](https
 - Mongoose
 - Cloudinary (for image storage and management)
 - JWT (JSON Web Tokens) for authentication
-- HTML, CSS, and JavaScript (Frontend)
+<!-- - HTML, CSS, and JavaScript (Frontend) -->
 - Socket.IO (for real-time updates)
 
 ## Installation
