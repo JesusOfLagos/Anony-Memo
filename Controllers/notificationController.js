@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-async function SendNotification(req, res, toUserId, content) {
+async function SendNotification(toUserId, content) {
   try {
     // Create the notification object
     const notification = new Notification({
