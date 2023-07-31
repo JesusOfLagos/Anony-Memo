@@ -12,7 +12,7 @@ const session = require('express-session')
  const path = require('path')
  const bodyparser = require("body-parser");
  const passport = require("passport");
- const socketio = require('socket.io');
+ const io = require('socket.io');
  const cronCleanup = require('./Controllers/cleanNotifications');
  const env = require('dotenv').config();
 
@@ -47,6 +47,32 @@ const session = require('express-session')
  //port
 
  const port = env.parsed.PORT || 8090;
+
+
+/ Socket.IO connection handling
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  // Handle join room event
+  // socket.on('joinRoom', (roomId) => {
+  //   socket.join(roomId);
+  //   console.log(`User joined room: ${roomId}`);
+  // });
+
+  // Handle leave room event
+  // socket.on('leaveRoom', (roomId) => {
+  //   socket.leave(roomId);
+  //   console.log(`User left room: ${roomId}`);
+  // });
+
+  // Handle disconnect event
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
+
+
+
 
 
  //listener
