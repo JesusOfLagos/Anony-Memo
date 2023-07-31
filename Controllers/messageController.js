@@ -8,49 +8,6 @@ const io = socketio(server);
 import { sendNotification } from './notificationController'
 
 
-
-async function SendMessage (req, res) {
-  try {
-
-
-    const message = new MessageSchema({
-
-    })
-
-
-
-    const { toUserId } = req.body;
-    io.to(req.userData._id).emit('newMessage', message);
-    io.to(toUserId).emit('newMessage', message);
-    const reason = `You just got a message from ${req.userData.userName}`
-
-    
-    const notification = new notificationSchema({
-      to: toUserId,
-      from: req.userData._id,
-      content: reason
-    })
-    // io.to(req.userData.userId).emit('newNotification', notification)
-    io.to(toUserId).emit('newNotification', notification);
-
-    res.status(201).json({ message: 'Notification sent successfully.' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to send notification.' });
-  }
-}
-
-  //   res.status(201).json({ message: 'Message sent successfully.' });
-  // } catch (error) {
-  //   res.status(500).json({ error: 'Failed to send the message.' });
-  // }
-// }
-
-
-
-
-
-
-
  async function ModerateMessage (req, res) {
     try {
       const { action, reason } = req.body;
@@ -192,11 +149,15 @@ async function SendMessage (req, res) {
   async function SendAMessage (req, res) {
     try {
       const { toUserId } = req.body;
+
+      const message = new MessageSchema({
+          
+      })
       io.to(req.userData.userId).emit('newMessage', message);
       io.to(toUserId).emit('newMessage', message);
 
       const notificationContent = `New message received from: ${req.userData.userName}`;
-      await sendNotification(req, res, toUserId, notificationContent);
+      await sendNotification(toUserId, notificationContent);
   
       res.status(201).json({ message: 'Message sent successfully.' });
     } catch (error) {
@@ -204,7 +165,26 @@ async function SendMessage (req, res) {
     }
   }
   
+
+
+
+  async function ReportMessageAbuse(req, res) {
+    try {
+      const moderatorId = req.params._id;
+      const abuseReport = req.body.abuseReport; // Assuming you have the abuse report data in the request body
   
+      // Emit the 'abuseReport' event to the specific moderator
+      io.to(moderatorId).emit('abuseReport', abuseReport);
+  
+      // Send a notification to the moderator about the abuse report
+      const notificationContent = `New abuse report received for message ID: ${abuseReport.messageId}`;
+      await sendNotification(moderatorId, notificationContent);
+  
+      res.status(201).json({ message: 'Abuse reported successfully.' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to report abuse.' });
+    }
+  }
   
 
 
@@ -224,27 +204,9 @@ async function SendMessage (req, res) {
 
   
 
-  async function ReportMessageAbuse(req, res) {
-    try {
-      const moderatorId = req.params._id;
-      const abuseReport = req.body.abuseReport; // Assuming you have the abuse report data in the request body
-  
-      // Emit the 'abuseReport' event to the specific moderator
-      io.to(moderatorId).emit('abuseReport', abuseReport);
-  
-      // Send a notification to the moderator about the abuse report
-      const notificationContent = `New abuse report received for message ID: ${abuseReport.messageId}`;
-      await sendNotification(req, res, moderatorId, notificationContent);
-  
-      res.status(201).json({ message: 'Abuse reported successfully.' });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to report abuse.' });
-    }
-  }
   
 
 
 
-  const notificationContent = `New abuse report received for message ID: ${abuseReport.messageId}`;
-      await sendNotification(req, res, moderatorId, notificationContent);
+
 
