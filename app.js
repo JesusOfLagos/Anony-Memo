@@ -21,6 +21,12 @@ const session = require('express-session')
  const server = http.createServer(app);
  const io = socketio(server);
 
+ const UserRoutes = require("./Routes/users");
+ app.use("/", UserRoutes);
+
+ const MessagesRoutes = require("./Routes/messages");
+ app.use("/", MessagesRoutes);
+
 
 
  app.use(
