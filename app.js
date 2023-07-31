@@ -12,11 +12,14 @@ const session = require('express-session')
  const path = require('path')
  const bodyparser = require("body-parser");
  const passport = require("passport");
- const io = require('socket.io');
+ const socketio = require('socket.io');
  const cronCleanup = require('./Controllers/cleanNotifications');
  const env = require('dotenv').config();
-
  const app = express();
+ const http = require('http');
+ const app = express();
+ const server = http.createServer(app);
+ const io = socketio(server);
 
 
 
