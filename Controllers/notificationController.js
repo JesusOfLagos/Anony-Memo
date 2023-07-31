@@ -1,4 +1,4 @@
-import { Notification } from '../Models/Notification';
+import { Notification } from '../Models/Notifications';
 import { Users } from '../Models/Users';
 const express = require('express');
 const socketio = require('socket.io');
