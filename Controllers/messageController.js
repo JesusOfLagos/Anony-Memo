@@ -6,6 +6,10 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 import { sendNotification } from './notificationController'
+import { Messages } from '../Models/Messages.js'
+// import { Users } from '../Models/Users.js'
+import { ModerationAction } from '../Models/Moderation.js'
+import { ReportAbuse } from '../Models/Messages.js'
 
 
  async function ModerateMessage (req, res) {
@@ -14,12 +18,12 @@ import { sendNotification } from './notificationController'
       const moderatorId = 'moderator123'; 
   
 
-      const messageId = req.params.messageId;
-      const Id = reportedMessage.from
-      const reportedMessage = await Message.findById(messageId);
+      const messageId = req.params._id;
+      const reportedMessage = await Messages.findById(messageId);
       if (!reportedMessage) {
         return res.status(404).json({ error: 'Reported message not found.' });
       }
+      const Id = reportedMessage.from
   
       
       const ModerationAction = new moderationAction({ moderatorId, messageId, action, reason });
@@ -48,8 +52,8 @@ import { sendNotification } from './notificationController'
           return res.status(400).json({ error: 'Invalid action.' })
       }
 
-      const notificationContent = `Message acted upon: ${action}`;
-      await sendNotification(req, res, Id, notificationContent);
+      const notificationContent = `Message with id: ${messageId} acted upon: ${action}`;
+      await sendNotification(Id, notificationContent);
   
       res.status(200).json({ message: 'Moderation action successful.' })
     } catch (error) {
@@ -90,12 +94,13 @@ import { sendNotification } from './notificationController'
 
   async function GetMessages(req, res) {
     try {
-      const { sort, userId, fromUser, toUser, keyword } = req.query;
+      const { sort, toUserId, fromUser, toUser, keyword } = req.query;
+      const userId = req.userData._id
   
       const queryOptions = {};
   
       if (userId) {
-        queryOptions.$or = [{ fromUser: userId }, { toUser: userId }];
+        queryOptions.$or = [{ fromUser: userId }, { toUser: toUserId }];
       }
   
       if (fromUser) {
@@ -175,8 +180,18 @@ import { sendNotification } from './notificationController'
 
   async function ReportMessageAbuse(req, res) {
     try {
-      const moderatorId = req.params._id;
-      const abuseReport = req.body.abuseReport; // Assuming you have the abuse report data in the request body
+      const moderatorId = 'moderator123';
+      const reporterId = req.userData._id
+      const messageId = req.params._id;
+
+
+      const abuseReport = new ReportAbuse({
+       reporterId,
+       messageId,
+       content
+      })
+
+     await abuseReport.save() 
   
       // Emit the 'abuseReport' event to the specific moderator
       io.to(moderatorId).emit('abuseReport', abuseReport);
