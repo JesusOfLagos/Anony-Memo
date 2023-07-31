@@ -32,7 +32,7 @@ const notificationSchema = new Schema({
 
 
 module.exports = {
-  Notification: notificationSchema
+  Notifications: notificationSchema
 };
 
 
