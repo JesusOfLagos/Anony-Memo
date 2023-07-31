@@ -148,12 +148,17 @@ import { sendNotification } from './notificationController'
 
   async function SendAMessage (req, res) {
     try {
-      const { toUserId } = req.body;
+      const { title, note, toUserId } = req.body;
 
       const message = new MessageSchema({
-          
+          title,
+          note,
+          to: toUserId,
+          from: req.userData._id
       })
-      io.to(req.userData.userId).emit('newMessage', message);
+
+     await message.save()
+      io.to(req.userData._id).emit('newMessage', message);
       io.to(toUserId).emit('newMessage', message);
 
       const notificationContent = `New message received from: ${req.userData.userName}`;
