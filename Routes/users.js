@@ -43,3 +43,7 @@ router.get('/users/get-user/:id', isLoggedIn, isAdmin, GetUser)
 router.get('/users/get-user-notifications/:id', isLoggedIn, GetNotifications)
 router.put('/user/edit-profile/:id', isLoggedIn, EditUserName)
 router.put('/update-profile-picture/:id', isLoggedIn, upload.single('profilePicture'), EditProfilePicture)
+
+
+
+module.exports = router;
