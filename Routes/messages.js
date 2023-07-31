@@ -12,4 +12,4 @@ router.post('/messages/report/:id', isLoggedIn, ReportMessageAbuse)
 router.post('/messages/moderate/:id', isAdmin, ModerateMessage)
 
 
-
+module.exports = router;
