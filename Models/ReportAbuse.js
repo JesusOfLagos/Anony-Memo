@@ -33,6 +33,10 @@ const Schema = Mongoose.Schema
   })
 
 
+module.exports = {
+    ReportAbuse: abuseReportSchema
+}
+
 
 
 
