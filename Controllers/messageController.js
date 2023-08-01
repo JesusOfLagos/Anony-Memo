@@ -5,12 +5,12 @@ const http = require('http');
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
-import { sendNotification } from './notificationController'
-import { Messages } from '../Models/Messages'
-import { Users } from '../Models/Users'
-import { ModerationAction } from '../Models/Moderation'
-import { ReportAbuse } from '../Models/ReportAbuse'
-import { Notifications } from '../Models/Notifications'
+const { sendNotification } = require('./notificationController')
+const { Messages } = require('../Models/Messages')
+const { Users } = require('../Models/Users')
+const { ModerationAction } = require('../Models/Moderation')
+const { ReportAbuse } = require('../Models/ReportAbuse')
+const { Notifications } = require('../Models/Notifications')
 
 
 
@@ -62,8 +62,8 @@ import { Notifications } from '../Models/Notifications'
       const Id = reportedMessage.from
   
       
-      const ModerationAction = new moderationAction({ moderatorId, messageId, action, reason });
-      await ModerationAction.save();
+      const newModerationAction = new ModerationAction({ moderatorId, messageId, action, reason });
+      await newModerationAction.save();
 
 
 
