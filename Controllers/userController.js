@@ -58,7 +58,7 @@ async function CreateUser (req, res) {
         const registerUser = new Users({
             firstName, 
             lastName,
-            userName: `${firstName} + ${lastName}`,
+            userName: `${firstName} + " " ${lastName}`,
             email,
             password,
             profilePicture: result.secure_url,
