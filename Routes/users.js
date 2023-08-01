@@ -1,5 +1,5 @@
+const { isLoggedIn, isAdmin } = require("../Auth/isLoggedIn")
 const express = require("express")
-import { isLoggedIn, isAdmin } from "../Auth/isLoggedIn"
 const { CreateUser, LoginUser, Logout, GetUser, EditUserName, EditProfilePicture } = require("../Controllers/userController")
 const { GetNotifications } = require("../Controllers/messageController")
 
