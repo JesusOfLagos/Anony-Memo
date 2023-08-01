@@ -10,7 +10,7 @@ const router = express.Router();
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const { Users } = require('../Models/Users');
+const Users = require('../Models/Users');
 const { LoginValidator, RegisterValidator } = require("../Validators/userValidators");
 // const jwt = require("jsonwebtoken");
 const env = require("dotenv").config();
@@ -51,6 +51,19 @@ const upload = multer({ storage: storage });
 async function CreateUser (req, res) {
     console.log(req.body)
     const {errors, isValid} = RegisterValidator(req.body);
+       // Check if the required fields are present in the request body
+    //    if (!req.body || !req.body.email || !req.body.password || !req.body.firstName || !req.body.lastName) {
+    //     res.json({ success: false, errors: { message: 'All fields are required.' } });
+    //     return;
+    // }
+
+    if (!req.file) {
+      return res.status(400).json({ message: 'Please provide a valid image file' });
+    }
+
+    const imageUrl = req.file.path;
+    const result = await cloudinary.uploader.upload(imageUrl, { folder: 'Profile-Pictures' });
+
     if (!isValid) {
         res.json({success: false, errors});
     } else {
@@ -58,17 +71,14 @@ async function CreateUser (req, res) {
         const registerUser = new Users({
             firstName, 
             lastName,
-            userName: `${firstName} + " " ${lastName}`,
+            userName: `${firstName} ${lastName}`,
             email,
             password,
             profilePicture: result.secure_url,
             createdAt: new Date()
         });
-        if (!req.file) {
-            return res.status(400).json({ message: 'Please provide a valid image file' });
-          }
-          const imageUrl = req.file.path;
-          const result = await cloudinary.uploader.upload(imageUrl, { folder: 'Profile-Pictures' });
+
+
         await bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(password, salt, (hashErr, hash) => {
                 if (err || hashErr) {
@@ -106,6 +116,13 @@ async function LoginUser (req, res) {
                     } else {
                         req.session.user = user;
                         req.session.loggedIn = true;
+
+                                    // Set session cookie in the response
+                        res.cookie("session_id", req.sessionID, {
+                          httpOnly: true,
+                          secure: false, // Set to true in production when using HTTPS
+                          maxAge: 24 * 60 * 60 * 1000, // Session duration in milliseconds (e.g., 24 hours)
+                        });
                         res.json({
                             user,
                             session,
@@ -156,52 +173,66 @@ async function Logout (req, res) {
 
 // Get A User By Id
 
-async function GetUser (req, res) {
-    await Users.findOne({_id: req.params.id}).then(user => {
-        res.json({user, success: true}).catch(er => {
-            res.json({success: false, message: er.message})
-        })
-    })
-}
+async function GetUser(req, res) {
+  try {
+    console.log(req.params._id)
+    const user = await Users.findById(req.params._id)
 
-
-
-
-async function EditUserName (req, res) {
-    const {newUserName} = req.body
-
-    const newValues = { $set: { userName: newUserName } };
-    await Users.findOneAndUpdate({id: req.params._id}, newValues).then(user => {
-        user.save()
-        res.json({user, success: true, message: "Edited User Profile Successfully"}).catch(error => {
-            res.json({message: "Can't Update User Profile", success: false})
-        })
-    })
-}
-
-
-async function EditProfilePicture (req, res) {
-    if (!req.file) {
-      return res.status(400).json({ message: 'Please provide a valid image file' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found', success: false });
     }
-  
-    const imageUrl = req.file.path;
-    const result = await cloudinary.uploader.upload(imageUrl, { folder: 'Profile-Pictures' });
-  
-    try {
-      // Save the secure URL in the userSchema
-      const user = await Users.findByIdAndUpdate(req.params.userId, { profilePicture: result.secure_url }, { new: true });
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      return res.json({ imageUrl: result.secure_url });
-    } catch (error) {
-      return res.status(500).json({ message: 'Error updating profile picture' });
-    }
+
+    res.json({ user, success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
-  
+}
 
+
+
+
+async function EditUserName(req, res) {
+  const { newUserName } = req.body;
+
+  const newValues = { $set: { userName: newUserName } };
+  try {
+    const user = await Users.findOneAndUpdate({_id: req.params._id}, newValues, { new: true });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found', success: false });
+    }
+    await user.save();
+    res.json({ user, success: true, message: "Edited User Profile Successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Can't Update User Profile", success: false, error: error.message });
+  }
+}
+
+
+
+async function EditProfilePicture(req, res) {
+  if (!req.file) {
+    return res.status(400).json({ message: 'Please provide a valid image file' });
+  }
+
+  const imageUrl = req.file.path;
+  const result = await cloudinary.uploader.upload(imageUrl, { folder: 'Profile-Pictures' });
+
+  try {
+    // Find the user by ID and update their profile picture
+    console.log(req.params._id)
+    const user = await Users.findByIdAndUpdate(req.params._id, { profilePicture: result.secure_url }, { new: true });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    } else {
+      // user.save(); 
+      const newImage = result.secure_url;
+      res.json({ imageUrl: newImage, message: 'Successfully updated profile picture' });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: 'Error updating profile picture' });
+  }
+}
 
 
 
