@@ -1,5 +1,5 @@
-import { Notification } from '../Models/Notifications';
-import { Users } from '../Models/Users';
+const { Notification } = require('../Models/Notifications');
+const { Users } = require('../Models/Users');
 const express = require('express');
 const socketio = require('socket.io');
 const http = require('http');
