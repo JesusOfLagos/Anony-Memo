@@ -47,7 +47,7 @@
 
  // middleware
  app.use(express.json());
-//  app.use(cronCleanup)
+ app.use(cronCleanup)
  app.use[morgan("dev")];
  app.use[cors({ origin: 'https://localhost:3000', credentials: true })];
   // app.use[cors({ origin: true, credentials: true })];
