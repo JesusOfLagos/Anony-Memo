@@ -9,13 +9,13 @@ const Schema = Mongoose.Schema
   const moderationSchema = new Schema({
     moderatorId: {
         type: Mongoose.Schema.Types.ObjectId,
-        ref: 'Users',
+        ref: 'users',
         required: true
     },
 
     messageId: {
         type: Mongoose.Schema.Types.ObjectId,
-        ref: 'Messages',
+        ref: 'messages',
         required: true
     },
 
@@ -36,17 +36,16 @@ const Schema = Mongoose.Schema
 
     time: {
         type: Date,
-        default: Date.now()
+        default: Date.now
     }
 
   })
 
+  const ModerationAction = Mongoose.model('ModerationAction', moderationSchema);
+
+  module.exports = ModerationAction;
 
 
-
-module.exports = {
-    ModerationAction: moderationSchema
-}
 
 
 
