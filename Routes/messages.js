@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const { isLoggedIn, isAdmin } = require("../Auth/isLoggedIn")
-const { GetMessages, SearchMessages, ReportMessageAbuse, ModerateMessage, SendMessage, ReportAbuse, SendAMessage } = require("../Controllers/messageController")
+const { GetMessages, SearchMessages, ReportMessageAbuse, ModerateMessage, SendMessage } = require("../Controllers/messageController")
 
 
 
