@@ -10,7 +10,7 @@ const router = express.Router();
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-import { Users } from '../Models/Users';
+const { Users } = require('../Models/Users');
 const { LoginValidator, RegisterValidator } = require("../Validators/userValidators");
 // const jwt = require("jsonwebtoken");
 const env = require("dotenv").config();
