@@ -13,12 +13,12 @@
  const bodyparser = require("body-parser");
  const passport = require("passport");
  const socketio = require('socket.io');
- const cronCleanup = require('./Controllers/cleanNotifications');
  const env = require('dotenv').config();
  const http = require('http');
  const app = express();
  const server = http.createServer(app);
  const io = socketio(server);
+ const performNotificationCleanup = require('./Controllers/cleanNotifications');
 
  const UserRoutes = require("./Routes/users");
  app.use("/", UserRoutes);
@@ -47,7 +47,6 @@
 
  // middleware
  app.use(express.json());
- app.use(cronCleanup)
  app.use[morgan("dev")];
  app.use[cors({ origin: 'https://localhost:3000', credentials: true })];
   // app.use[cors({ origin: true, credentials: true })];
@@ -93,6 +92,8 @@ app.listen(port, (err) => {
     console.log(`Server Is Running on Port ${port}`) 
 
 });
+
+performNotificationCleanup();
 
 
 
