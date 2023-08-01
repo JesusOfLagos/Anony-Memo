@@ -20,6 +20,25 @@
  const io = socketio(server);
  const performNotificationCleanup = require('./Controllers/cleanNotifications');
 
+
+  // middleware
+  app.use(express.json());
+  app.use(morgan("dev"));
+  app.use(cors({ origin: 'https://localhost:3000', credentials: true })); 
+   // app.use[cors({ origin: true, credentials: true })];
+ 
+ app.use(
+  session({
+    secret: 'my-secret', 
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+
+ app.use(bodyparser.json());
+ app.use(bodyparser.urlencoded({ extended: true }));
+
  const UserRoutes = require("./Routes/users");
  app.use("/", UserRoutes);
 
@@ -28,13 +47,6 @@
 
 
 
- app.use(
-    session({
-      secret: 'my-secret', 
-      resave: false,
-      saveUninitialized: true,
-    })
-  );
 
 
 
@@ -45,11 +57,6 @@
  })
  .catch(err => console.log(err, "Oops!, an error occured!"));
 
- // middleware
- app.use(express.json());
- app.use[morgan("dev")];
- app.use[cors({ origin: 'https://localhost:3000', credentials: true })];
-  // app.use[cors({ origin: true, credentials: true })];
 
 
  //port
