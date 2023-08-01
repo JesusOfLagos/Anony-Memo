@@ -9,13 +9,13 @@ const Schema = Mongoose.Schema
 
   const abuseReportSchema = new Schema({
     reporterId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Mongoose.Schema.Types.ObjectId,
         ref: 'Users',
         required: true
     },
 
     messageId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Mongoose.Schema.Types.ObjectId,
         ref: 'Messages',
         required: true
     },
