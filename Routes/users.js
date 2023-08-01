@@ -2,7 +2,7 @@ const { isLoggedIn, isAdmin } = require("../Auth/isLoggedIn")
 const express = require("express")
 const { CreateUser, LoginUser, Logout, GetUser, EditUserName, EditProfilePicture } = require("../Controllers/userController")
 const { GetNotifications } = require("../Controllers/messageController")
-
+const successfullyLoggedIn = require("../Auth/checkAuth")
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
@@ -40,7 +40,7 @@ router.post('/users/create', upload.single('profilePicture'), CreateUser)
 router.post('/users/auth/login', LoginUser)
 router.post('/users/auth/logout', Logout)
 router.get('/users/get-user/:_id', GetUser)
-router.get('/users/get-user-notifications', isLoggedIn, GetNotifications)
+router.get('/users/get-user-notifications/:_id', GetNotifications)
 router.put('/user/edit-profile/:_id', EditUserName)
 router.put('/update-profile-picture/:_id', upload.single('profilePicture'), EditProfilePicture)
 
