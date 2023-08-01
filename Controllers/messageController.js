@@ -24,7 +24,7 @@ import { Notifications } from '../Models/Notifications'
       const message = new Messages({
           title,
           note,
-          to: toUserId,
+          toUserId,
           from: req.userData._id
       })
 
@@ -100,7 +100,7 @@ import { Notifications } from '../Models/Notifications'
 
 async function GetNotifications (req, res) {
     try {
-      const { sort, userId } = req.query;
+      const { sort } = req.query;
 
       const queryOptions = {};
   
@@ -130,7 +130,7 @@ async function GetNotifications (req, res) {
 
   async function GetMessages(req, res) {
     try {
-      const { sort, toUserId, fromUser, toUser, keyword } = req.query;
+      const { sort, toUserId, keyword } = req.query;
       const userId = req.userData._id
   
       const queryOptions = {};
@@ -193,6 +193,7 @@ async function GetNotifications (req, res) {
       const moderatorId = 'moderator123';
       const reporterId = req.userData._id
       const messageId = req.params._id;
+      const { content } = req.body;
 
 
       const abuseReport = new ReportAbuse({
