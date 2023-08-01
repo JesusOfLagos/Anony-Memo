@@ -4,7 +4,7 @@
 
  // import modules
 
-const session = require('express-session')
+ const session = require('express-session')
  const express = require("express");
  const mongoose = require("mongoose");
  const morgan = require("morgan");
@@ -15,7 +15,6 @@ const session = require('express-session')
  const socketio = require('socket.io');
  const cronCleanup = require('./Controllers/cleanNotifications');
  const env = require('dotenv').config();
- const app = express();
  const http = require('http');
  const app = express();
  const server = http.createServer(app);
@@ -48,6 +47,7 @@ const session = require('express-session')
 
  // middleware
  app.use(express.json());
+ app.use(cronCleanup)
  app.use[morgan("dev")];
  app.use[cors({ origin: 'https://localhost:3000', credentials: true })];
   // app.use[cors({ origin: true, credentials: true })];
@@ -58,7 +58,7 @@ const session = require('express-session')
  const port = env.parsed.PORT || 8090;
 
 
-/ Socket.IO connection handling
+// Socket.IO connection handling
 io.on('connection', (socket) => {
   console.log('A user connected');
 
@@ -86,7 +86,7 @@ io.on('connection', (socket) => {
 
  //listener
 
- const server = app.listen(port, (err) => { 
+app.listen(port, (err) => { 
     if(err){
         console.log(err);
     }
