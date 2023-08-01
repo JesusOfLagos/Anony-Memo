@@ -1,6 +1,6 @@
 
 
-const Notification = require("../Models/Notification")
+const Notification = require("../Models/Notifications")
 const cron = require('node-cron')
 
 
@@ -16,3 +16,5 @@ cron.schedule('0 0 * * *', async () => {
     console.error('Notification cleanup error:', error);
   }
 });
+
+module.exports = cron;
