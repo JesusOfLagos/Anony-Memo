@@ -1,5 +1,5 @@
-const { Notification } = require('../Models/Notifications');
-const { Users } = require('../Models/Users');
+const Notifications = require('../Models/Notifications');
+const Users = require('../Models/Users');
 const express = require('express');
 const socketio = require('socket.io');
 const http = require('http');
@@ -7,32 +7,41 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-async function SendNotification(toUserId, content) {
+async function SendNotification(to, from, notificationContent) {
   try {
+
+    // const from = req.params._id
+    // console.log(from)
+    // const {to, content} = req.body
+    // console.log(toUserId)
+    // console.log(content)
     // Create the notification object
-    const notification = new Notification({
-      to: toUserId,
-      from: req.userData._id,
-      content: content
+    const notification = new Notifications({
+      to: to,
+      from: from,
+      content: notificationContent
     });
+    console.log(notification)
 
-    const savedNotification = await notification.save();
+    await notification.save();
 
-    const notificationContent = savedNotification.content;
-    await Users.findOne({id: req.userData._id}).then(user => {
+    const theNotificationContent = notification.content;
+    const notificationId = notification._id
+    console.log(notification)
+    await Users.findById({_id: to}).then(user => {
       user.notifications.push(notificationId)
       user.save()
     })
 
-    io.to(toUserId).emit('newNotification', notificationContent);
+    io.to(to).emit('newNotification', theNotificationContent);
 
-    res.status(201).json({ message: 'Notification sent successfully.', notificationContent });
+    // res.status(201).json({ message: 'Notification sent successfully.', notificationContent });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to send notification.' });
+    console.log(error)
+    // res.status(500).json({ error: 'Failed to send notification.' });
   }
 }
 
 
-module.exports = {
-  SendNotification: SendNotification
-}
+module.exports = SendNotification
+
