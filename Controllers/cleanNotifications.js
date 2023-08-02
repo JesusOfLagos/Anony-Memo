@@ -17,7 +17,7 @@ function performNotificationCleanup() {
 
   cronImp.start();
 
-  return cronImp; // Return the cron job instance to be used in app.js
+  return cronImp; 
 }
 
 module.exports = performNotificationCleanup;
