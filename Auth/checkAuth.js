@@ -15,3 +15,12 @@ module.exports = (req, res, next) => {
 }
 
 }
+
+
+module.exports.successfullyLoggedIn = (req, res, next) => {
+    if (!req.session.loggedIn) {
+        res.status(401).json('Unauthorized. Please log in.')
+      } else {
+        next();
+      }
+}
