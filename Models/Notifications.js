@@ -9,11 +9,11 @@ const Schema = Mongoose.Schema
 const notificationSchema = new Schema({
   to: {
     type: Mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'users'
   },
   from: {
     type: Mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'users'
   },
   content: {
     type: String,
@@ -31,10 +31,9 @@ const notificationSchema = new Schema({
 
 
 
-module.exports = {
-  Notifications: notificationSchema
-};
+const Notification = Mongoose.model('Notification', notificationSchema);
 
+module.exports = Notification;
 
 
 
