@@ -5,45 +5,61 @@ const http = require('http');
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
-const { sendNotification } = require('./notificationController')
-const { Messages } = require('../Models/Messages')
-const { Users } = require('../Models/Users')
-const { ModerationAction } = require('../Models/Moderation')
-const { ReportAbuse } = require('../Models/ReportAbuse')
-const { Notifications } = require('../Models/Notifications')
+const sendNotification = require('./notificationController')
+const Messages = require('../Models/Messages')
+const Users = require('../Models/Users')
+const ModerationAction = require('../Models/Moderation')
+const ReportAbuse = require('../Models/ReportAbuse')
+const Notifications = require('../Models/Notifications')
 
 
 
 
 
 
-  async function SendMessage (req, res) {
-    try {
-      const { title, note, toUserId } = req.body;
+async function SendMessage(req, res) {
+  try {
+    const { title, note, to } = req.body;
 
-      const message = new Messages({
-          title,
-          note,
-          toUserId,
-          from: req.userData._id
-      })
+    const message = new Messages({
+      title,
+      note,
+      to,
+      from: req.params._id,
+    });
 
-     await message.save()
-     const user = await Users.find({ id: req.userData._id }).then(user => {
-      user.messages.push(message._id)
-      user.save()
-     })
-      io.to(req.userData._id).emit('newMessage', message);
-      io.to(toUserId).emit('newMessage', message.note);
+    await message.save();
+    console.log(message)
 
-      const notificationContent = `New message received from: ${req.userData.userName}`;
-      await sendNotification(toUserId, notificationContent);
-  
-      res.status(201).json({ message: 'Message sent successfully.' });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to send the message.' });
+    const toUser = await Users.findOne({ _id: to });
+    console.log(toUser)
+    if (toUser) {
+      toUser.messages.push(message._id);
+      await toUser.save();
     }
+
+    const fromUser = await Users.findOne({ _id: req.params._id });
+    console.log(fromUser)
+    if (fromUser) {
+      fromUser.messages.push(message._id);
+      await fromUser.save();
+    }
+
+    io.to(req.params._id).emit('newMessage', message);
+    io.to(to).emit('newMessage', message.note);
+
+    const notificationContent = `New message received from: ${req.params._id}`;
+    const from = req.params._id
+    await sendNotification(to, from, notificationContent);
+
+    res.status(201).json({ message: 'Message sent successfully.' });
+  } catch (error) {
+    console.error('Error sending message:', error);
+    res.status(500).json({ error: 'Failed to send the message.' });
   }
+  
+}
+
 
 
 
@@ -54,7 +70,7 @@ const { Notifications } = require('../Models/Notifications')
       const moderatorId = 'moderator123'; 
   
 
-      const messageId = req.params._id;
+      const messageId = req.query._id;
       const reportedMessage = await Messages.findById(messageId);
       if (!reportedMessage) {
         return res.status(404).json({ error: 'Reported message not found.' });
@@ -100,29 +116,24 @@ const { Notifications } = require('../Models/Notifications')
 
 async function GetNotifications (req, res) {
     try {
+      console.log(req.params._id)
       const { sort } = req.query;
 
-      const queryOptions = {};
-  
-      // if (userId) {
-      //   queryOptions.$or = [{ fromUser: userId }, { toUser: userId }];
-      // }
-  
-      // Sorting based on date
+      const userId = req.params._id
+      const queryOptions = { from: userId };
       let sortOptions = { createdAt: 1 }; 
       if (sort === 'desc') {
         sortOptions = { createdAt: -1 }; 
       }
-
-
-
-  
+      console.log(sort)
+      console.log(sortOptions)
+      console.log(queryOptions)
       // Fetch messages from the database based on query options and sort options
-      const notifications = await Notifications.find().sort(sortOptions);
+      const notifications = await Notifications.find(queryOptions).sort(sortOptions);
   
       res.json(notifications);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch messages.' });
+      res.status(500).json({ error: 'Failed to fetch notifications.' });
     }
   }
 
@@ -131,25 +142,25 @@ async function GetNotifications (req, res) {
   async function GetMessages(req, res) {
     try {
       const { sort, toUserId, keyword } = req.query;
-      const userId = req.userData._id
+      const userId = req.params._id
   
       const queryOptions = {};
   
       if (userId) {
-        queryOptions.$or = [{ fromUser: userId }, { toUser: toUserId }];
+        queryOptions.$or = [{ note: { $regex: keyword, $options: 'i' } }, { from: userId }, { to: toUserId }];
       }
   
-      if (fromUser) {
-        queryOptions.fromUser = fromUser;
-      }
+      // if (fromUser) {
+      //   queryOptions.from = fromUser;
+      // }
   
-      if (toUser) {
-        queryOptions.toUser = toUser;
-      }
+      // if (toUser) {
+      //   queryOptions.to = toUser;
+      // }
   
-      if (keyword) {
-        queryOptions.content = { $regex: keyword, $options: 'i' };
-      }
+      // if (keyword) {
+      //   queryOptions.note = { $regex: keyword, $options: 'i' };
+      // }
   
       // Sorting based on date
       let sortOptions = { createdAt: 1 };
@@ -176,9 +187,10 @@ async function GetNotifications (req, res) {
  async function SearchMessages (req, res) {
     try {
       const { keyword } = req.query;
+      console.log(keyword)
   
-      const messages = await Messages.find({ content: { $regex: keyword, $options: 'i' } });
-  
+      const messages = await Messages.find({ note: { $regex: keyword, $options: 'i' } });
+      console.log(messages)
       res.json(messages);
     } catch (error) {
       res.status(500).json({ error: 'Failed to find messages with this keyword.' });
@@ -191,9 +203,12 @@ async function GetNotifications (req, res) {
   async function ReportMessageAbuse(req, res) {
     try {
       const moderatorId = 'moderator123';
-      const reporterId = req.userData._id
+      const reporterId = req.query._id
+      console.log(reporterId)
       const messageId = req.params._id;
-      const { content } = req.body;
+      console.log(messageId)
+      const {content} = req.body;
+      console.log(req.body)
 
 
       const abuseReport = new ReportAbuse({
@@ -201,15 +216,18 @@ async function GetNotifications (req, res) {
        messageId,
        content
       })
-
+     console.log(abuseReport)
      await abuseReport.save() 
+  
   
       // Emit the 'abuseReport' event to the specific moderator
       io.to(moderatorId).emit('abuseReport', abuseReport);
   
       // Send a notification to the moderator about the abuse report
       const notificationContent = `New abuse report received for message ID: ${abuseReport.messageId}`;
-      await sendNotification(moderatorId, notificationContent);
+      console.log(abuseReport.messageId)
+      console.log(notificationContent)
+      await sendNotification(messageId, notificationContent);
   
       res.status(201).json({ message: 'Abuse reported successfully.' });
     } catch (error) {
